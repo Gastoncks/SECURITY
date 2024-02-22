@@ -9,10 +9,10 @@ help_txt = """
  du processeur Hôte, puis ordonne au processeur Hote de commencer ses opérations
  """
 
-
 import sys
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA3_256
+from hashlib import sha512
 
 def usage():
   if len (sys.argv) != 2:
@@ -25,7 +25,6 @@ plaintext = b"totototototototo"
 plaintext2 = b"tatatatatatatata"
 print (type(plaintext))
 key = b"Sixteen byte yey"
-
 
 def chiffrement(plaintext,key):
   object  = AES.new(key, AES.MODE_ECB)
@@ -41,6 +40,29 @@ def hashage(plaintext):
    h_obj = SHA3_256.new()
    h_obj.update(plaintext)
    return h_obj.hexdigest()
+
+def gen_keypair():
+    from Crypto.PublicKey import RSA
+    keyPair = RSA.generate(2048)
+    print(f"Public key:  (n={hex(keyPair.n)}, e={hex(keyPair.e)})")
+    print ("""
+            
+           
+     """)
+    print(f"Private key: (n={hex(keyPair.n)}, d={hex(keyPair.d)})")
+    return keyPair
+
+def signature(keypair):
+    hash = int.from_bytes(sha512(plaintext).digest(), byteorder='big')
+    signature = pow(hash, keypair.e, keypair.n)
+    print("Signature:", hex(signature))
+    return signature
+
+def verif_signature(keypair, signature):
+    hash = int.from_bytes(sha512(plaintext).digest(), byteorder='big')
+    hashFromSignature = pow(signature, keypair.e, keypair.n)
+    print("Signature valid:", hash == hashFromSignature)
+
 
 scenario = int(sys.argv[1])
 
@@ -102,5 +124,13 @@ elif  (scenario ==2):  #on fait seulement un chiffrement  + intégrité
         print("échec total...")
         exit(1)
        
-elif  (scenario ==3):  #on fait une signature avec un algo asymétrique (candidats : RSA, ECDSA)
-    print ("protection:  signature RSA ou ECDSA")
+elif  (scenario ==3):  #on fait une signature avec un algo asymétrique (candidats : rsa)(ECDSA plus tard)
+    print ("protection:  signature RSA")
+    keypair = gen_keypair()
+    print ("""
+            
+           
+ """)
+    signature = signature(keypair)
+    verif_signature(keypair, signature)
+
