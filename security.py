@@ -67,7 +67,7 @@ elif  (scenario ==1):  #on fait seulement une intégrité
     hexdigest = hashage(plaintext)
     print("Hexdigest :",hexdigest)
 
-    plaintext_sboot = plaintext2
+    plaintext_sboot = plaintext
     hexdigest_sboot = hashage(plaintext_sboot)
     print("Hexdigest Sboot:",hexdigest_sboot)
 
@@ -84,7 +84,7 @@ elif  (scenario ==2):  #on fait seulement un chiffrement  + intégrité
     hexdigest = hashage(plaintext)
     print("hexdigest :",hexdigest)
 
-    ciphertext = chiffrement(plaintext2,key)
+    ciphertext = chiffrement(plaintext,key)
     print("ciphertext: ", ciphertext)
 
     plaintext_sboot = dechiffrement(ciphertext,key)
