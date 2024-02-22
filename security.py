@@ -60,6 +60,7 @@ def verif_signature(keypair, signature, plaintext):
     return hash, hashFromSignature
 
 
+
 scenario = int(sys.argv[1])
 
 if (scenario == 0):  #on faire seulement un chiffrement de la nvm
@@ -120,7 +121,7 @@ elif  (scenario ==2):  #on fait seulement un chiffrement  + intégrité
         print("échec total...")
         exit(1)
        
-elif  (scenario ==3):  #on fait une signature avec un algo asymétrique (candidats : rsa)(ECDSA plus tard)
+elif  (scenario ==3):  #on fait une signature avec un algo asymétrique (candidats : rsa)
     print ("protection:  signature RSA")
     keypair = gen_keypair()
     print ("\n")
@@ -132,32 +133,33 @@ elif  (scenario ==3):  #on fait une signature avec un algo asymétrique (candida
 elif  (scenario == 4):  #on fait une signature avec un algo asymétrique RSA + un chiffrement
     print ("protection:  signature RSA  + chiffrement")
     keypair = gen_keypair()
-    print (plaintext)
-    print ("\n")
+    print("plaintext :", plaintext)
+    print("\n")
 
     signature_value = signature(keypair, plaintext)
     print("Signature:", hex(signature_value))
-    print ("\n")
+    print("\n")
 
     ciphertext = chiffrement(plaintext,key)
     print("ciphertext: ", ciphertext)
     plaintext_sboot = dechiffrement(ciphertext,key)
     print("plaintext sboot:  ",plaintext_sboot)
-    print ("\n")
+    print("\n")
 
     hash, hashFromSignature = verif_signature(keypair, signature_value, plaintext_sboot)
-    
+
     if plaintext == plaintext_sboot and hash == hashFromSignature:
         print("succées!")
-    elif plaintext != plaintext_sboot and hash == hashFromSignature:
-        print("échec...problème de chiffrement")
-        exit(1)
-    elif plaintext != plaintext_sboot and hash == hashFromSignature:
+    elif plaintext == plaintext_sboot and hash != hashFromSignature:
         print("échec...problème de signature")
         exit(1)
     else:
         print("échec total...")
         exit(1)
+
+elif (scenario == 5): #on fait une signature avec un algo asymétrique ECDSA
+    print("protection:  signature ECDSA")
+
     
 
     
