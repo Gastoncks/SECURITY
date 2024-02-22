@@ -60,7 +60,6 @@ def verif_signature(keypair, signature, plaintext):
     return hash, hashFromSignature
 
 
-
 scenario = int(sys.argv[1])
 
 if (scenario == 0):  #on faire seulement un chiffrement de la nvm
