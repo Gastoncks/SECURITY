@@ -45,20 +45,19 @@ def gen_keypair():
     from Crypto.PublicKey import RSA
     keyPair = RSA.generate(2048)
     print(f"Public key:  (n={hex(keyPair.n)}, e={hex(keyPair.e)})")
-    print ("\n\n")
+    print ("\n")
     print(f"Private key: (n={hex(keyPair.n)}, d={hex(keyPair.d)})")
     return keyPair
 
-def signature(keypair):
+def signature(keypair, plaintext):
     hash = int.from_bytes(sha512(plaintext).digest(), byteorder='big')
     signature = pow(hash, keypair.d, keypair.n)
-    print("Signature:", hex(signature))
     return signature
 
-def verif_signature(keypair, signature):
+def verif_signature(keypair, signature, plaintext):
     hash = int.from_bytes(sha512(plaintext).digest(), byteorder='big')
     hashFromSignature = pow(signature, keypair.e, keypair.n)
-    print("Signature valid:", hash == hashFromSignature)
+    return hash, hashFromSignature
 
 
 scenario = int(sys.argv[1])
@@ -124,14 +123,41 @@ elif  (scenario ==2):  #on fait seulement un chiffrement  + intégrité
 elif  (scenario ==3):  #on fait une signature avec un algo asymétrique (candidats : rsa)(ECDSA plus tard)
     print ("protection:  signature RSA")
     keypair = gen_keypair()
-    print ("\n\n")
+    print ("\n")
+
     signature_value = signature(keypair)
-    verif_signature(keypair, signature_value)
+    hash, hashFromSignature = verif_signature(keypair, signature_value)
+    print("Signature valid:", hash == hashFromSignature)
 
 elif  (scenario == 4):  #on fait une signature avec un algo asymétrique RSA + un chiffrement
     print ("protection:  signature RSA  + chiffrement")
     keypair = gen_keypair()
-    print ("\n\n")
-    signature_value = signature(keypair)
-    verif_signature(keypair, signature_value)
+    print (plaintext)
+    print ("\n")
 
+    signature_value = signature(keypair, plaintext)
+    print("Signature:", hex(signature_value))
+    print ("\n")
+
+    ciphertext = chiffrement(plaintext,key)
+    print("ciphertext: ", ciphertext)
+    plaintext_sboot = dechiffrement(ciphertext,key)
+    print("plaintext sboot:  ",plaintext_sboot)
+    print ("\n")
+
+    hash, hashFromSignature = verif_signature(keypair, signature_value, plaintext_sboot)
+    
+    if plaintext == plaintext_sboot and hash == hashFromSignature:
+        print("succées!")
+    elif plaintext != plaintext_sboot and hash == hashFromSignature:
+        print("échec...problème de chiffrement")
+        exit(1)
+    elif plaintext != plaintext_sboot and hash == hashFromSignature:
+        print("échec...problème de signature")
+        exit(1)
+    else:
+        print("échec total...")
+        exit(1)
+    
+
+    
