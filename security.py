@@ -45,16 +45,13 @@ def gen_keypair():
     from Crypto.PublicKey import RSA
     keyPair = RSA.generate(2048)
     print(f"Public key:  (n={hex(keyPair.n)}, e={hex(keyPair.e)})")
-    print ("""
-            
-           
-     """)
+    print ("\n\n")
     print(f"Private key: (n={hex(keyPair.n)}, d={hex(keyPair.d)})")
     return keyPair
 
 def signature(keypair):
     hash = int.from_bytes(sha512(plaintext).digest(), byteorder='big')
-    signature = pow(hash, keypair.e, keypair.n)
+    signature = pow(hash, keypair.d, keypair.n)
     print("Signature:", hex(signature))
     return signature
 
@@ -127,10 +124,14 @@ elif  (scenario ==2):  #on fait seulement un chiffrement  + intégrité
 elif  (scenario ==3):  #on fait une signature avec un algo asymétrique (candidats : rsa)(ECDSA plus tard)
     print ("protection:  signature RSA")
     keypair = gen_keypair()
-    print ("""
-            
-           
- """)
-    signature = signature(keypair)
-    verif_signature(keypair, signature)
+    print ("\n\n")
+    signature_value = signature(keypair)
+    verif_signature(keypair, signature_value)
+
+elif  (scenario == 4):  #on fait une signature avec un algo asymétrique RSA + un chiffrement
+    print ("protection:  signature RSA  + chiffrement")
+    keypair = gen_keypair()
+    print ("\n\n")
+    signature_value = signature(keypair)
+    verif_signature(keypair, signature_value)
 
